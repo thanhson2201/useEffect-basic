@@ -112,4 +112,103 @@ function Content() {
     )
 }
 
+
+    //! useEffects with timer function
+function Content() {
+    const [countDown, setCountDown] = useState(180);
+
+    useEffect(() => {
+        const timeId = setInterval(() => {
+            setCountDown(prev => prev - 1);
+        }, 500)
+        return () => {
+            clearInterval(timeId);
+        }
+    }, []);
+    console.log('render');
+    return (
+        <div>
+            <h1>{countDown}</h1>
+        </div>
+    )
+}
+
+    //! useEffects with preview avatar
+function Content() {
+    const [avatar, setAvatar] = useState();
+
+    useEffect(() => {
+        return () => {
+            avatar && URL.revokeObjectURL(avatar.preview);
+        }
+    }, [avatar]);
+
+    const handlePreviewAvt = (e) => {
+        const file = e.target.files[0];
+        file.preview = URL.createObjectURL(file);
+        setAvatar(file);
+    }
+
+    return (
+        <div>
+            <input
+                type={"file"}
+                onChange={handlePreviewAvt}
+            />
+            {avatar && (
+                <img
+                    src={avatar.preview}
+                    alt={'something'}
+                    width={100}
+                />
+            )}
+        </div>
+    )
+}
+
+     // useEffect with fake chat app
+function Content() {
+         const lessons = [
+        {
+            id: 1,
+            name: 'JS'
+        },
+        {
+            id: 2,
+            name: 'CSS'
+        },
+        {
+            id: 3,
+            name: 'HTML'
+        }
+    ]
+    const [lessonId, setLessonId] =  useState(1);
+    useEffect(() => {
+        const handleComment = ({ detail }) => {
+            console.log(detail);
+        };
+
+        window.addEventListener(`lesson-${lessonId}`, handleComment);
+        return () => {
+            window.removeEventListener(`lesson-${lessonId}`, handleComment);
+        }
+    }, [lessonId])
+
+    return (
+        <div>
+            <ul>
+                {lessons.map(lesson => (
+                    <li
+                        key={lesson.id}
+                        style={{color: lesson.id === lessonId ? 'red' : '#333'}}
+                        onClick={() => setLessonId(lesson.id)}
+                    >
+                        {lesson.name}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
+}
+
 export default Content
